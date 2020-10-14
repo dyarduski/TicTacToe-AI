@@ -1,28 +1,30 @@
 import random
+from os import system
 
 class Tic:
-    def init(self):
+    def __init__(self):
         self.board = ["-"]*9
     def printboard(self):
         print(" | ".join([i for i in self.board[0:3]]))
-        print(" | ".join([i for i in self.board[3:7]]))
-        print(" | ".join([i for i in self.board[7:10]]))
+        print(" | ".join([i for i in self.board[3:6]]))
+        print(" | ".join([i for i in self.board[6:10]]))
+        print()
     def CheckForWin(self,BoardCheck,Li):
-        return BoardCheck[0]==BoardCheck[1]==BoardCheck[2]==Li or \
-               BoardCheck[3]==BoardCheck[4]==BoardCheck[5]==Li or \
-               BoardCheck[6]==BoardCheck[7]==BoardCheck[8]==Li or \
-               BoardCheck[0]==BoardCheck[3]==BoardCheck[6]==Li or \ 
-               BoardCheck[1]==BoardCheck[4]==BoardCheck[7]==Li or \
-               BoardCheck[2]==BoardCheck[5]==BoardCheck[8]==Li or \
-               BoardCheck[0]==BoardCheck[4]==BoardCheck[8]==Li or \
-               BoardCheck[2]==BoardCheck[4]==BoardCheck[6]==Li  
+        return (BoardCheck[0]==BoardCheck[1]==BoardCheck[2]==Li or 
+               BoardCheck[3]==BoardCheck[4]==BoardCheck[5]==Li or 
+               BoardCheck[6]==BoardCheck[7]==BoardCheck[8]==Li or 
+               BoardCheck[0]==BoardCheck[3]==BoardCheck[6]==Li or  
+               BoardCheck[1]==BoardCheck[4]==BoardCheck[7]==Li or 
+               BoardCheck[2]==BoardCheck[5]==BoardCheck[8]==Li or 
+               BoardCheck[0]==BoardCheck[4]==BoardCheck[8]==Li or 
+               BoardCheck[2]==BoardCheck[4]==BoardCheck[6]==Li)  
     def HumanMove(self):
         self.run = True
         while self.run:
             self.Humanpos = input("Choose a position 1-9: ")
-            if self.Humanpos.isdigit() == False or not 0 < self.HumanMove < 10 or self.board[self.Humanpos] != "-":
+            if self.Humanpos.isdigit() == False or not 0 < int(self.Humanpos) < 10 or self.board[int(self.Humanpos)-1] != "-":
                 continue
-            self.board[self.Humanpos-1] = "X"
+            self.board[int(self.Humanpos)-1] = "X"
             self.run = False
     def NonHumanMove(self):
         self.PossibleBotMoves = [c for c,let in enumerate(self.board) if let=="-"]
@@ -53,13 +55,23 @@ class Tic:
         
         return False
     def start(self):
-        self.printboard()
         while True:
-            if not self.CheckForWin("O"):
+            system("cls")
+            self.printboard()
+            if not self.CheckForWin(self.board,"O"):
                 self.HumanMove()
-                self.printboard()
-            if not self.CheckForWin("X"):
+            else:
+                print("Bot won, You lost gg")
+                break
+            if not self.CheckForWin(self.board,"X"):
                 self.MoveToMake = self.NonHumanMove()
                 if self.MoveToMake == False:    print("Tie")
                 self.board[self.MoveToMake] = "O"
-                self.printboard()
+            else:
+                print("Nice you won")
+                break
+            
+
+
+T = Tic()   
+T.start()
