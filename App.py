@@ -35,29 +35,30 @@ class Tic:
                 self.BoardCopy[move] = i
                 if self.CheckForWin(self.BoardCopy,i):  
                     return move
+            
+        if 4 in  self.PossibleBotMoves:
+            return 4
 
         self.cornerlist = []
         for move in self.PossibleBotMoves:
             if move == 0 or move == 2 or move == 8 or move == 6:
                 self.cornerlist.append(move)
         if len(self.cornerlist) > 0:
-            return int(random.choice(self.cornerlist))
+            self.r = int(random.choice(self.cornerlist))
+            print(self.r)
+            return self.r 
         
-        if 4 in  self.PossibleBotMoves:
-            return 4
-
         self.edgeList = []
         for move in self.PossibleBotMoves:
             if move == 1 or move == 3 or move == 5 or move == 7:
                 self.edgeList.append(move)
         if len(self.edgeList) > 0:
             return int(random.choice(self.edgeList))
-        
-        return False
+
+        return -1
     def start(self):
+        self.printboard()
         while True:
-            system("cls")
-            self.printboard()
             if not self.CheckForWin(self.board,"O"):
                 self.HumanMove()
             else:
@@ -65,11 +66,15 @@ class Tic:
                 break
             if not self.CheckForWin(self.board,"X"):
                 self.MoveToMake = self.NonHumanMove()
-                if self.MoveToMake == False:    print("Tie")
+                if self.MoveToMake == -1:    
+                    print("Tie.")
+                    break
                 self.board[self.MoveToMake] = "O"
             else:
                 print("Nice you won")
                 break
+            system("cls")
+            self.printboard()
             
 
 
