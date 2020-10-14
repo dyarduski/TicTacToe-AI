@@ -45,15 +45,15 @@ class Tic:
                 self.cornerlist.append(move)
         if len(self.cornerlist) > 0:
             self.r = int(random.choice(self.cornerlist))
-            print(self.r)
             return self.r 
-        
+
         self.edgeList = []
         for move in self.PossibleBotMoves:
             if move == 1 or move == 3 or move == 5 or move == 7:
                 self.edgeList.append(move)
         if len(self.edgeList) > 0:
             return int(random.choice(self.edgeList))
+        
 
         return -1
     def start(self):
@@ -67,10 +67,14 @@ class Tic:
             if not self.CheckForWin(self.board,"X"):
                 self.MoveToMake = self.NonHumanMove()
                 if self.MoveToMake == -1:    
+                    system("cls")
+                    self.printboard()
                     print("Tie.")
                     break
                 self.board[self.MoveToMake] = "O"
             else:
+                system("cls")
+                self.printboard()
                 print("Nice you won")
                 break
             system("cls")
