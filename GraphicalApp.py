@@ -8,7 +8,9 @@ clock = pygame.time.Clock()
 
 Letter_x = pygame.image.load("letter-x.png")
 Letter_o = pygame.image.load("circle.png")
+Background = pygame.image.load("BlueBack.jpg")
 My_Font = pygame.font.SysFont('Comic Sans MS', 50)
+My_Font2 = pygame.font.SysFont('Arial', 30)
 
 App = Tic()
 class Rectangle:
@@ -32,47 +34,90 @@ Rectangle_List = [Rectangle(screen,(255,255,255),(0,0),(185,190),1),Rectangle(sc
                   Rectangle(screen,(255,255,255),(193,198),(185,190),5),Rectangle(screen,(255,255,255),(386,198),(185,190),6),
                   Rectangle(screen,(255,255,255),(0,397),(185,190),7),Rectangle(screen,(255,255,255),(193,397),(185,190),8),
                   Rectangle(screen,(255,255,255),(386,397),(185,190),9)]
-def draw_text(Text):
-    global screen,run
+
+def draw_text(Text,Text_position,End=None):
+    global screen,run,Rectangle_List
     if "you" in Text.lower():
         textsurface = My_Font.render(Text, False, (0, 255, 0))
     else:
         textsurface = My_Font.render(Text, False, (255, 0, 0))
-    screen.blit(textsurface,(Width/2-85,14))
-    run = False
+    screen.blit(textsurface,Text_position)
+    if End==True:   
+        for R in Rectangle_List:
+            R.Hitted = False
+            App.__init__()
+        run = False
+
+def draw_game(screen,Rectangle_List):
+    screen.fill((149, 165, 166 ))
+    for R in Rectangle_List:
+        R.draw(screen)
+
+def draw_menu(screen):
+    screen.blit(Background,(0,0))
+    Possible = pygame.draw.rect(screen,(93, 173, 226),(Width/2-90,Height/2-60,175,35))
+    Impossible = pygame.draw.rect(screen,(93, 173, 226),(Width/2-90,Height/2-100,175,35))
+    screen.blit(My_Font2.render("Possible", False, (0, 255, 0)),(Width/2-87,Height/2-60))
+    screen.blit(My_Font2.render("Impossible", False, (255, 0, 0)),(Width/2-87,Height/2-100))
+    return Possible,Impossible
 
 def Tic_setup(To_Put):
     App.HumanMove(To_Put)
     BotMove = App.NonHumanMove()
-    if BotMove == -1:   print("Tie.");draw_text("Tie.");return
+    if BotMove == -1:   print("Tie.");draw_text("Tie.",(Width/2-85,14),True);return
     App.board[BotMove] = "O"
     App.printboard()
+
     if App.CheckForWin(App.board,"X"):
         print("You won.")
-        draw_text("You won.")
+        draw_text("You won.",(Width/2-85,14),True)
         return
     if App.CheckForWin(App.board,"O"):
         print("Bot won.")
-        draw_text("Bot won.")
+        draw_text("Bot won.",(Width/2-85,14),True)
 
 
     return BotMove
+        
+run = False
+timer_start = False
+timer = 0
 
-screen.fill((149, 165, 166 ))
-for R in Rectangle_List:
-    R.draw(screen)
-run = True
 while True:
+    clock.tick(60)
+    if timer_start:
+        timer +=1
+        if timer == 60*5:
+            timer_start=False;timer=0
+            continue
+        for event in  pygame.event.get():   
+            if event.type == 12:
+               exit()
+        continue
+    if run == False:
+        Possible,Impossible = draw_menu(screen)
     for event in  pygame.event.get():   
-        if event.type == pygame.QUIT:
+        if event.type == 12:
             exit()
-        if event.type == pygame.MOUSEBUTTONUP and run == True:
+        if event.type == 6:
             pos = pygame.mouse.get_pos()
-            for R in  Rectangle_List:
-                H = R.hit(pos)
-                if H[0] == True:
-                    Return_Value = Tic_setup(H[1])
-                    screen.blit(Letter_x,(Rectangle_List[H[1]-1].XY_Width_Height[0]+25,Rectangle_List[H[1]-1].XY_Width_Height[1]+30))
-                    if Return_Value == None:    continue
-                    screen.blit(Letter_o,(Rectangle_List[Return_Value].XY_Width_Height[0]+25,Rectangle_List[Return_Value].XY_Width_Height[1]+30))
+            if run == False:
+                if Possible.collidepoint(pos):
+                    draw_game(screen,Rectangle_List)
+                    run = True
+                    continue
+                elif Impossible.collidepoint(pos):
+                    App.Hard = True
+                    draw_game(screen,Rectangle_List)
+                    run = True
+                    continue
+            if run == True:
+                for R in  Rectangle_List:
+                    H = R.hit(pos)
+                    if H[0] == True:
+                        Return_Value = Tic_setup(H[1])
+                        screen.blit(Letter_x,(Rectangle_List[H[1]-1].XY_Width_Height[0]+25,Rectangle_List[H[1]-1].XY_Width_Height[1]+30))
+                        if Return_Value == None:    pygame.display.flip();timer_start=True;continue
+                        Rectangle_List[Return_Value].Hitted = True
+                        screen.blit(Letter_o,(Rectangle_List[Return_Value].XY_Width_Height[0]+25,Rectangle_List[Return_Value].XY_Width_Height[1]+30))
     pygame.display.flip()

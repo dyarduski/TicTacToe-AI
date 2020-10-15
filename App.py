@@ -4,6 +4,8 @@ from os import system
 class Tic:
     def __init__(self):
         self.board = ["-"]*9
+        self.move = 0
+        self.Hard = False
     def printboard(self):
         print(" | ".join([i for i in self.board[0:3]]))
         print(" | ".join([i for i in self.board[3:6]]))
@@ -29,8 +31,15 @@ class Tic:
                 continue
             self.board[int(self.Humanpos)-1] = "X"
             self.run = False
+    def HardCheck(self):
+        if self.board[0] == "X" and self.board[4]=="O" and self.board[8]=="X":
+            return random.choice(["1","3","5","7"])
+        elif self.board[6] == "X" and self.board[4]=="O" and self.board[2]=="X":
+            return random.choice(["1","3","5","7"])
+        return "False"
     def NonHumanMove(self):
         self.PossibleBotMoves = [c for c,let in enumerate(self.board) if let=="-"]
+        self.move +=1
         self.BoardCopy = self.board.copy()
         for i in ["O","X"]:
             for move in self.PossibleBotMoves:
@@ -38,13 +47,16 @@ class Tic:
                 self.BoardCopy[move] = i
                 if self.CheckForWin(self.BoardCopy,i):  
                     return move
-            
+        if self.move == 2 and self.Hard == True:
+            self.r = self.HardCheck()   
+            if self.r.isdigit():
+                return int(self.r)
         if 4 in  self.PossibleBotMoves:
             return 4
 
         self.cornerlist = []
         for move in self.PossibleBotMoves:
-            if move == 0 or move == 2 or move == 8 or move == 6:
+            if move in [0,2,8,6]:
                 self.cornerlist.append(move)
         if len(self.cornerlist) > 0:
             self.r = int(random.choice(self.cornerlist))
@@ -52,12 +64,11 @@ class Tic:
 
         self.edgeList = []
         for move in self.PossibleBotMoves:
-            if move == 1 or move == 3 or move == 5 or move == 7:
+            if move == [1,3,5,7]:
                 self.edgeList.append(move)
         if len(self.edgeList) > 0:
             return int(random.choice(self.edgeList))
         
-
         return -1
     def start(self):
         self.printboard()
