@@ -18,7 +18,10 @@ class Tic:
                BoardCheck[2]==BoardCheck[5]==BoardCheck[8]==Li or 
                BoardCheck[0]==BoardCheck[4]==BoardCheck[8]==Li or 
                BoardCheck[2]==BoardCheck[4]==BoardCheck[6]==Li)  
-    def HumanMove(self):
+    def HumanMove(self,Num=None):
+        if Num != None:
+            self.board[Num-1] = "X"
+            return
         self.run = True
         while self.run:
             self.Humanpos = input("Choose a position 1-9: ")
@@ -81,6 +84,6 @@ class Tic:
             self.printboard()
             
 
-
-T = Tic()   
-T.start()
+if __name__ == "__main__":
+    T = Tic()   
+    T.start()
