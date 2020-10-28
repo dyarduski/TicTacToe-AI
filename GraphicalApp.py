@@ -4,6 +4,7 @@ from App import Tic
 pygame.font.init() 
 Width,Height = 570,587
 screen = pygame.display.set_mode((Width,Height))
+pygame.display.set_caption("TicTacToe")
 clock = pygame.time.Clock()
 
 Letter_x = pygame.image.load("letter-x.png")
@@ -64,7 +65,7 @@ def draw_menu(screen):
 def Tic_setup(To_Put):
     App.HumanMove(To_Put)
     BotMove = App.NonHumanMove()
-    if BotMove == -1:   print("Tie.");draw_text("Tie.",(Width/2-85,14),True);return
+    if BotMove == -1:   print("Tie.");draw_text("Tie.",(Width/2-85,14),True);return None,""
     App.board[BotMove] = "O"
     App.printboard()
 
@@ -75,9 +76,9 @@ def Tic_setup(To_Put):
     if App.CheckForWin(App.board,"O"):
         print("Bot won.")
         draw_text("Bot won.",(Width/2-85,14),True)
+        return BotMove,"Bot"
 
-
-    return BotMove
+    return BotMove,"NO"
         
 run = False
 timer_start = False
@@ -104,6 +105,7 @@ while True:
             if run == False:
                 if Possible.collidepoint(pos):
                     draw_game(screen,Rectangle_List)
+                    App.Hard = False
                     run = True
                     continue
                 elif Impossible.collidepoint(pos):
@@ -117,7 +119,8 @@ while True:
                     if H[0] == True:
                         Return_Value = Tic_setup(H[1])
                         screen.blit(Letter_x,(Rectangle_List[H[1]-1].XY_Width_Height[0]+25,Rectangle_List[H[1]-1].XY_Width_Height[1]+30))
-                        if Return_Value == None:    pygame.display.flip();timer_start=True;continue
-                        Rectangle_List[Return_Value].Hitted = True
-                        screen.blit(Letter_o,(Rectangle_List[Return_Value].XY_Width_Height[0]+25,Rectangle_List[Return_Value].XY_Width_Height[1]+30))
+                        if Return_Value[0] == None:    pygame.display.flip();timer_start=True;continue
+                        Rectangle_List[Return_Value[0]].Hitted = True
+                        screen.blit(Letter_o,(Rectangle_List[Return_Value[0]].XY_Width_Height[0]+25,Rectangle_List[Return_Value[0]].XY_Width_Height[1]+30))
+                        if Return_Value[1] == "Bot":    pygame.display.flip();timer_start=True;continue
     pygame.display.flip()
